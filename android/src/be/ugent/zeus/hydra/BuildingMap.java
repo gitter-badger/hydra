@@ -41,7 +41,7 @@ public class BuildingMap extends AbstractSherlockFragmentActivity implements Goo
         markerMap = new HashMap<String, Marker>();
 
         setUpMapIfNeeded();
-        
+
         handleIntent(getIntent());
     }
 
@@ -50,7 +50,7 @@ public class BuildingMap extends AbstractSherlockFragmentActivity implements Goo
         setIntent(intent);
         handleIntent(intent);
     }
-    
+
     private void setUpMapIfNeeded() {
         // Do a null check to confirm that we have not already instantiated the map.
         if (map == null) {
