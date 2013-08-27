@@ -1,6 +1,7 @@
 /**
  *
- * @author Tom Naessens Tom.Naessens@UGent.be 3de Bachelor Informatica Universiteit Gent
+ * @author Tom Naessens Tom.Naessens@UGent.be 3de Bachelor Informatica
+ * Universiteit Gent
  * @author Stijn Seghers <stijn.seghers at ugent.be>
  */
 package be.ugent.zeus.hydra;
@@ -23,10 +24,14 @@ import be.ugent.zeus.hydra.data.caches.SongCache;
 import be.ugent.zeus.hydra.data.services.HTTPIntentService;
 import be.ugent.zeus.hydra.data.services.UrgentService;
 import be.ugent.zeus.hydra.util.audiostream.MusicService;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.ShareActionProvider;
 
 public class Urgent extends AbstractSherlockActivity {
 
     private static final String TAG = "Urgent";
+    private static final String DEFAULT_RESPONSE = "Geen plaat(info)";
     private static final int REFRESH_TIME = 20 * 1000;
     private final Handler handler = new Handler();
     private Runnable refresh;
@@ -36,6 +41,7 @@ public class Urgent extends AbstractSherlockActivity {
     private TextView current;
     LinearLayout prevContainer;
     LinearLayout currentContainer;
+    private ShareActionProvider mShareActionProvider;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -167,11 +173,55 @@ public class Urgent extends AbstractSherlockActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.share, menu);
+        MenuItem menuItem = menu.findItem(R.id.share);
+        mShareActionProvider = new ShareActionProvider(getSupportActionBar().getThemedContext());
+        menuItem.setActionProvider(mShareActionProvider);
+
+        updateShareIntent();
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
     private void refresh() {
         Intent intent = new Intent(this, UrgentService.class);
         intent.putExtra(HTTPIntentService.RESULT_RECEIVER_EXTRA, new SongResultReceiver());
 
         startService(intent);
+    }
+
+    private boolean is_info_valid(String info) {
+        return info != null && !DEFAULT_RESPONSE.equals(info);
+    }
+
+    private void updateShareIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+
+        Song currentSong = cache.get(SongCache.CURRENT);
+        String text = getResources().getString(R.string.urgent_share_without_song);
+        Log.d(TAG, currentSong + "");
+        if (currentSong != null) {
+            Log.d(TAG, currentSong.title_and_artist);
+            Log.d(TAG, currentSong.program);
+            if (is_info_valid(currentSong.title_and_artist)) {
+                if (is_info_valid(currentSong.program)) {
+                    text = getResources().getString(R.string.urgent_share_song_show, currentSong.title_and_artist, currentSong.program);
+                } else {
+                    text = getResources().getString(R.string.urgent_share_song, currentSong.title_and_artist);
+                }
+            } else if (is_info_valid(currentSong.program)) {
+                text = getResources().getString(R.string.urgent_share_show, currentSong.program);
+            }
+        }
+        Log.d(TAG, text);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, R.string.urgent_share_subject);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+
+        mShareActionProvider.setShareIntent(shareIntent);
     }
 
     private class SongResultReceiver extends ResultReceiver {
@@ -189,7 +239,7 @@ public class Urgent extends AbstractSherlockActivity {
                             Song curSong = cache.get(SongCache.CURRENT);
                             Song prevSong = cache.get(SongCache.PREVIOUS);
 
-                            if (prevSong != null && !prevSong.title_and_artist.equals("Geen plaat(info)")) {
+                            if (prevSong != null && !DEFAULT_RESPONSE.equals(prevSong.title_and_artist)) {
                                 previous.setText(prevSong.title_and_artist.toUpperCase());
                                 prevContainer.setVisibility(TextView.VISIBLE);
 
@@ -199,7 +249,7 @@ public class Urgent extends AbstractSherlockActivity {
 
                                 Log.v(TAG, "Previous: " + R.string.no_song_info_found);
                             }
-                            if (curSong != null && !curSong.title_and_artist.equals("Geen plaat(info)")) {
+                            if (curSong != null && !DEFAULT_RESPONSE.equals(curSong.title_and_artist)) {
                                 current.setText(curSong.title_and_artist.toUpperCase());
                                 currentContainer.setVisibility(TextView.VISIBLE);
 
@@ -211,12 +261,12 @@ public class Urgent extends AbstractSherlockActivity {
                             }
 
                             if (curSong != null && !show.getText().equals(String.format(getResources().getString(R.string.urgent_show_prefix),
-                                curSong.program.toUpperCase()))) {
+                                    curSong.program.toUpperCase()))) {
                                 show.setText(
-                                    String.format(getResources().getString(R.string.urgent_show_prefix),
-                                    curSong.program.toUpperCase()));
+                                        String.format(getResources().getString(R.string.urgent_show_prefix),
+                                        curSong.program.toUpperCase()));
                             }
-
+                            updateShareIntent();
                         }
                     });
                     break;

@@ -109,6 +109,11 @@
     <string name="urgent_show_prefix">U LUISTERT NAAR %1$s</string>
     <string name="urgent_vorige_title">vorige:</string>
     <string name="urgent_huidige_title">speelt nu:</string>
+    <string name="urgent_share_subject">Beluister Urgent.fm</string>
+    <string name="urgent_share_song_show">Aan het luisteren naar %1$s op %2$s op Urgent.fm</string>
+    <string name="urgent_share_show">Aan het luisteren naar %1$s op Urgent.fm</string>
+    <string name="urgent_share_song">Aan het luisteren naar %1$s op Urgent.fm</string>
+    <string name="urgent_share_without_song">Aan het luisteren naar Urgent.fm</string>
     
     
     <string name="attending">Deelnemen</string>
