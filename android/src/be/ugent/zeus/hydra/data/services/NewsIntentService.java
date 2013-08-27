@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 import be.ugent.zeus.hydra.Hydra;
-import be.ugent.zeus.hydra.data.Activity;
 import be.ugent.zeus.hydra.data.NewsItem;
 import be.ugent.zeus.hydra.data.caches.NewsCache;
 import java.text.SimpleDateFormat;
@@ -17,6 +16,7 @@ public class NewsIntentService extends HTTPIntentService {
 
     public static final String FEED_NAME = "news-feed-name";
     public static final String NEWS_URL = "all_news.json";
+    public static final int REFRESH_TIME = 1000 * 60 * 60;
     private NewsCache cache;
 
     public NewsIntentService() {
@@ -40,7 +40,7 @@ public class NewsIntentService extends HTTPIntentService {
             if (fetchedData != null) {
                 ArrayList<NewsItem> newsList = new ArrayList<NewsItem>(Arrays.asList(parseJsonArray(new JSONArray(fetchedData), NewsItem.class)));
 
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ", Hydra.LOCALE);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Hydra.LOCALE);
                 for (NewsItem newsItem : newsList) {
                     newsItem.dateDate = dateFormat.parse(newsItem.date);
                 }
@@ -48,6 +48,10 @@ public class NewsIntentService extends HTTPIntentService {
                 cache.put(FEED_NAME, newsList);
             }
 
+            if (receiver != null) {
+                receiver.send(STATUS_FINISHED, Bundle.EMPTY);
+            }
+            
         } catch (Exception e) {
             Log.e("[NewsIntentService]", "Exception:");
             e.printStackTrace();
@@ -57,8 +61,5 @@ public class NewsIntentService extends HTTPIntentService {
             }
         }
 
-        if (receiver != null) {
-            receiver.send(STATUS_FINISHED, Bundle.EMPTY);
-        }
     }
 }

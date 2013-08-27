@@ -2,16 +2,12 @@ package be.ugent.zeus.hydra;
 
 import android.os.Bundle;
 import android.text.Html;
-import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.widget.TextView;
 import be.ugent.zeus.hydra.data.NewsItem;
 import com.google.analytics.tracking.android.EasyTracker;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  *
@@ -31,6 +27,7 @@ public class NewsItemActivity extends AbstractSherlockActivity {
 
         NewsItem item = (NewsItem) getIntent().getSerializableExtra("item");
 
+        EasyTracker.getInstance().setContext(this);
         EasyTracker.getTracker().sendView("News > " + item.title);
 
         TextView title = (TextView) findViewById(R.id.news_item_title);
@@ -45,12 +42,12 @@ public class NewsItemActivity extends AbstractSherlockActivity {
         }
 
         String datum =
-            new SimpleDateFormat("dd MMMM yyyy 'om' hh:mm", Hydra.LOCALE).format(item.dateDate);
+            new SimpleDateFormat("EEE dd MMMM yyyy 'om' HH:mm", Hydra.LOCALE).format(item.dateDate);
 
         association.setText(String.format(postedBy, datum, Html.fromHtml(poster)));
 
         TextView content = (TextView) findViewById(R.id.news_item_content);
-        content.setText(Html.fromHtml(item.content.replace("\n", "<br>")));
+        content.setText(Html.fromHtml(item.content.replace("\n\n", "").replace("\n", "<br>")));
         content.setMovementMethod(LinkMovementMethod.getInstance());
         Linkify.addLinks(content, Linkify.ALL);
     }

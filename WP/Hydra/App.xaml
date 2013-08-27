@@ -28,7 +28,7 @@
         <Style x:Name="HighLighted" TargetType="TextBlock">
             <Setter Property="Style" Value="{StaticResource PhoneTextTitle2Style}" />
             <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeLarge}" />
-            <Setter Property="Foreground" Value="Chocolate" />
+            <!--<Setter Property="Foreground" Value="Chocolate" />-->
         </Style>
         <Style x:Name="NormalNotHighLighted" TargetType="TextBlock">
             <Setter Property="Style" Value="{StaticResource PhoneTextTitle2Style}" />
@@ -43,7 +43,10 @@
         <convert:ObjectHeaderActivityToVisibilityConverter x:Key="objectHeaderActivityToVisbility" />
         <convert:ObjectHeaderNewsToVisibilityConverter x:Key="objectHeaderNewsToVisbility" />
         <convert:ObjectToStyleConverter x:Key="objectToStyle" />
-        
+        <convert:ActivityToBooleanConverter x:Key="ActivityToBoolean" />
+        <convert:StringToVisibilityConverter x:Key="StringToVisibilty" />
+        <convert:StringToImageConverter x:Key="StringToImage"/>
+        <convert:BooleanToVisibilityConverter x:Key="booleanToVisibility" />
         
         <local:LocalizedStrings xmlns:local="clr-namespace:Hydra" x:Key="LocalizedStrings"/>
     </Application.Resources>

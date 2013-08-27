@@ -22,7 +22,6 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
@@ -36,6 +35,7 @@ import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 import be.ugent.zeus.hydra.R;
@@ -68,6 +68,7 @@ public class MusicService extends Service implements OnCompletionListener, OnPre
     // The volume we set the media player to when we lose audio focus, but are allowed to reduce
     // the volume instead of stopping playback.
     public static final float DUCK_VOLUME = 0.1f;
+    public static final boolean DEBUG = false;
     // our media player
     MediaPlayer mPlayer = null;
     // our AudioFocusHelper object, if it's available (it's available on SDK level >= 8)
@@ -175,7 +176,6 @@ public class MusicService extends Service implements OnCompletionListener, OnPre
         } else {
             mAudioFocus = AudioFocus.Focused; // no focus feature, so we always "have" audio focus
         }
-        // TODO: Change to urgent logo
         mDummyAlbumArt = BitmapFactory.decodeResource(getResources(), R.drawable.urgent_lockart);
 
         mMediaButtonReceiverComponent = new ComponentName(this, MusicIntentReceiver.class);
@@ -457,7 +457,7 @@ public class MusicService extends Service implements OnCompletionListener, OnPre
             new Intent(getApplicationContext(), Urgent.class),
             PendingIntent.FLAG_UPDATE_CURRENT);
 
-        mNotification = new Notification.Builder(getApplicationContext())
+        mNotification = new NotificationCompat.Builder(getApplicationContext())
             .setSmallIcon(R.drawable.urgent_icon)
             .setTicker(text)
             .setContentTitle("Urgent.fm livestream")
@@ -485,7 +485,10 @@ public class MusicService extends Service implements OnCompletionListener, OnPre
     }
 
     public void onGainedAudioFocus() {
-        Toast.makeText(getApplicationContext(), "gained audio focus.", Toast.LENGTH_SHORT).show();
+
+        if (MusicService.DEBUG) {
+            Toast.makeText(getApplicationContext(), "gained audio focus.", Toast.LENGTH_SHORT).show();
+        }
         mAudioFocus = AudioFocus.Focused;
 
         // restart media player with new focus settings

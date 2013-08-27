@@ -2,7 +2,12 @@
 
 ![hydra-icon-web](https://f.cloud.github.com/assets/5676/46955/0101cef4-58a8-11e2-8b16-06537c38a8cf.png)
 
-Android, iOS, BlackBerry 10 application providing all the information a student at [Ghent University](http://www.ugent.be/) needs. WP coming soon.
+
+[![Available on the App Store](http://student.ugent.be/hydra/img/store-ios.png)](https://itunes.apple.com/be/app/hydra/id602640924)
+[![Get it on Google Play](http://student.ugent.be/hydra/img/store-android.png)](http://play.google.com/store/apps/details?id=be.ugent.zeus.hydra)
+[![Get it on the Marketplace](http://student.ugent.be/hydra/img/store-windows.png)](http://www.windowsphone.com/s?appId=08d3268e-aad6-48fa-ae83-5ccd1663e73a)
+
+Android, iOS, BlackBerry 10 and Windows Phone application providing all the information a student at [Ghent University](http://www.ugent.be/) needs.
 
 This application was developed by [Zeus WPI](http://zeus.ugent.be), the computer science working group. Please contact [hydra@zeus.ugent.be](mailto:hydra@zeus.ugent.be) with any questions.
 
@@ -74,3 +79,5 @@ In order of first contribution:
 * Arya Ghodsi
 * Bart Middag
 * Stijn Seghers
+* Ruben Taelman
+* Wouter Pinnoo

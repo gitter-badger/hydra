@@ -9,6 +9,7 @@
 #import "UrgentViewController.h"
 #import "UrgentPlayer.h"
 #import "MarqueeLabel.h"
+#import <ShareKit/ShareKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import <MessageUI/MessageUI.h>
 
@@ -55,11 +56,17 @@
     showLabel.font = [UIFont fontWithName:@"GillSans" size:14];
     showLabel.textColor = [UIColor colorWithWhite:0.533 alpha:1.000];
     showLabel.marqueeType = MLContinuous;
+    showLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
     [self.view addSubview:showLabel];
     self.showLabel = showLabel;
 
     // Initialize state
     [self playerStatusChanged:nil];
+
+    // Add share button
+    UIBarButtonItem *btn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                                         target:self action:@selector(shareButtonTapped:)];
+    self.navigationItem.rightBarButtonItem = btn;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -92,36 +99,36 @@
     }
 }
 
+- (void)openUrl:(NSString *)url fallbackUrl:(NSString *)fallbackUrl
+{
+    UIApplication *app = [UIApplication sharedApplication];
+    NSURL *resultUrl = [NSURL URLWithString:url];
+    if (![app canOpenURL:resultUrl]) {
+        resultUrl = [NSURL URLWithString:fallbackUrl];
+    }
+    [app openURL:resultUrl];
+}
+
 - (IBAction)homeButtonTapped:(id)sender
 {
-    NSURL *url = [NSURL URLWithString:@"http://urgent.fm"];
-    [[UIApplication sharedApplication] openURL:url];
+    [self openUrl:@"http://urgent.fm" fallbackUrl:nil];
 }
 
 - (IBAction)facebookButtonTapped:(id)sender
 {
-    UIApplication *app = [UIApplication sharedApplication];
-    NSURL *url = [NSURL URLWithString:@"fb://profile/28367168655"];
-    if (![app canOpenURL:url]) {
-        url = [NSURL URLWithString:@"https://www.facebook.com/pages/Urgentfm/28367168655"];
-    }
-    [app openURL:url];
+    [self openUrl:@"fb://profile/28367168655"
+      fallbackUrl:@"https://www.facebook.com/pages/Urgentfm/28367168655"];
 }
 
 - (IBAction)twitterButtonTapped:(id)sender
 {
-    UIApplication *app = [UIApplication sharedApplication];
-    NSURL *url = [NSURL URLWithString:@"twitter://user?screen_name=UrgentFM"];
-    if (![app canOpenURL:url]) {
-        url = [NSURL URLWithString:@"https://mobile.twitter.com/urgentfm"];
-    }
-    [app openURL:url];
+    [self openUrl:@"twitter://user?screen_name=UrgentFM"
+      fallbackUrl:@"https://mobile.twitter.com/urgentfm"];
 }
 
 - (IBAction)soundcloudButtonTapped:(id)sender
 {
-    NSURL *url = [NSURL URLWithString:@"http://m.soundcloud.com/urgent-fm-official"];
-    [[UIApplication sharedApplication] openURL:url];
+    [self openUrl:@"http://m.soundcloud.com/urgent-fm-official" fallbackUrl:nil];
 }
 
 - (IBAction)mailButtonTapped:(id)sender
@@ -137,6 +144,49 @@
           didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
 {
     [self dismissModalViewControllerAnimated:YES];
+}
+
+- (void)shareButtonTapped:(id)sender
+{
+    NSURL *url = [NSURL URLWithString:@"http://www.urgent.fm"];
+    NSString *message =[self createShareMessage];
+    // Available since iOS6
+    if ([UIActivityViewController class]) {
+        NSArray *items = @[ message, url ];
+
+        UIActivityViewController *c = [[UIActivityViewController alloc] initWithActivityItems:items
+                                                                        applicationActivities:@[]];
+        [self presentViewController:c animated:YES completion:NULL];
+    }
+    else {
+        // Create the item to share
+        SHKItem *item = [SHKItem URL:url title:message contentType:SHKURLContentTypeUndefined];
+
+        // Get the ShareKit action sheet
+        SHKActionSheet *actionSheet = [SHKActionSheet actionSheetForItem:item];
+
+        // Display the action sheet
+        [actionSheet showFromToolbar:self.navigationController.toolbar];
+    }
+}
+
+- (NSString*)createShareMessage
+{
+    NSString *string = @"Beluister urgent.fm";
+    if ([[UrgentPlayer sharedPlayer] isPlaying]){
+        NSString *show = [[UrgentPlayer sharedPlayer] currentShow];
+        NSString *song = [[UrgentPlayer sharedPlayer] currentSong];
+        if (show.length > 0){
+            if (song.length){
+                string = [NSString stringWithFormat:@"Aan het luisteren naar %@ op %@", song, show];
+            }else {
+                string = [NSString stringWithFormat:@"Aan het luisteren naar %@", show];
+            }
+        }else if (song.length > 0){
+            string = [NSString stringWithFormat:@"Aan het luisteren naar %@", song];
+        }
+    }
+    return string;
 }
 
 #pragma mark - Listeners

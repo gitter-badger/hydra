@@ -24,7 +24,6 @@ import be.ugent.zeus.hydra.data.caches.LegendCache;
 import be.ugent.zeus.hydra.data.services.HTTPIntentService;
 import be.ugent.zeus.hydra.data.services.LegendService;
 import be.ugent.zeus.hydra.data.services.MenuService;
-import be.ugent.zeus.hydra.data.services.RestoService;
 import be.ugent.zeus.hydra.ui.SwipeyTabs;
 import be.ugent.zeus.hydra.ui.SwipeyTabsAdapter;
 import be.ugent.zeus.hydra.ui.menu.MenuView;
@@ -47,6 +46,8 @@ public class RestoMenu extends AbstractSherlockActivity {
     private MenuPagerAdapter adapter;
     private RestoMenu.LegendResultReceiver receiver = new RestoMenu.LegendResultReceiver();
     private ProgressDialog progressDialog;
+    private LegendCache legendCache;
+    private List<RestoLegend> legend;
 
     /**
      * Called when the activity is first created.
@@ -65,6 +66,17 @@ public class RestoMenu extends AbstractSherlockActivity {
         adapter = new MenuPagerAdapter();
         pager.setAdapter(adapter);
         tabs.setAdapter(adapter);
+
+        legendCache = LegendCache.getInstance(this);
+
+        if (!legendCache.exists(LegendService.FEED_NAME)
+            || System.currentTimeMillis() - legendCache.lastModified(LegendService.FEED_NAME) > LegendService.REFRESH_TIME) {
+            Intent intent = new Intent(this, LegendService.class);
+            intent.putExtra(HTTPIntentService.RESULT_RECEIVER_EXTRA, new RestoMenu.LegendResultReceiver());
+            startService(intent);
+        } else {
+            legend = legendCache.get(LegendService.FEED_NAME);
+        }
     }
 
     @Override
@@ -197,11 +209,10 @@ public class RestoMenu extends AbstractSherlockActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.show_about:
-                showAboutDialog(false);
+                showAboutDialog();
                 return true;
             case R.id.show_map:
                 Intent intent = new Intent(this, BuildingMap.class);
-                intent.putExtra("class", this.getClass().getCanonicalName());
                 startActivity(intent);
                 return true;
             default:
@@ -212,9 +223,8 @@ public class RestoMenu extends AbstractSherlockActivity {
     /**
      * About dialog based on code from Mobile Vikings for Android by Ben Van Daele
      */
-    public void showAboutDialog(boolean synced) {
-        final List<RestoLegend> legend = LegendCache.getInstance(this).getAll();
-        if (legend.size() > 0) {
+    public void showAboutDialog() {
+        if (legend != null && !legend.isEmpty()) {
             Builder builder = new Builder(this);
             builder.setIcon(android.R.drawable.ic_dialog_info);
             builder.setTitle(getString(R.string.resto_about));
@@ -233,15 +243,8 @@ public class RestoMenu extends AbstractSherlockActivity {
             builder.setPositiveButton(getString(android.R.string.ok), null);
             AlertDialog dialog = builder.create();
             dialog.show();
-
         } else {
-            if (!synced) {
-                Intent intent = new Intent(this, LegendService.class);
-                intent.putExtra(HTTPIntentService.RESULT_RECEIVER_EXTRA, receiver);
-                startService(intent);
-            } else {
-                Toast.makeText(this, R.string.no_restos_found, Toast.LENGTH_SHORT).show();
-            }
+            Toast.makeText(this, "Legende ophalen is niet gelukt", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -348,6 +351,7 @@ public class RestoMenu extends AbstractSherlockActivity {
             }
         }
     }
+
     private class LegendResultReceiver extends ResultReceiver {
 
         public LegendResultReceiver() {
@@ -356,17 +360,11 @@ public class RestoMenu extends AbstractSherlockActivity {
 
         @Override
         protected void onReceiveResult(int code, Bundle data) {
-            switch (code) {
-                case RestoService.STATUS_FINISHED:
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            showAboutDialog(true);
-                        }
-                    });
-                    break;
+
+            if (code == HTTPIntentService.STATUS_FINISHED) {
+                legend = legendCache.get(LegendService.FEED_NAME);
             }
 
         }
     }
-    
 }

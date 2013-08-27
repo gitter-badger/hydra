@@ -94,16 +94,21 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\ActivityToBooleanConverter.cs" />
     <Compile Include="Converters\BooleanToStringConverter.cs" />
+    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\ObjectHeaderActivityToVisibilityConverter.cs" />
     <Compile Include="Converters\ObjectHeaderNewsToVisibilityConverter.cs" />
     <Compile Include="Converters\ObjectToStyleConverter.cs" />
     <Compile Include="Converters\ObjectToBooleanConverter.cs" />
     <Compile Include="Converters\ObjectToVisibilityConverter.cs" />
+    <Compile Include="Converters\StringToImageConverter.cs" />
+    <Compile Include="Converters\StringToVisibilityConverter.cs" />
     <Compile Include="Data\AssociationList.cs" />
     <Compile Include="Converters\BooleanToStyleConverter.cs" />
     <Compile Include="Data\KeyedList.cs" />
     <Compile Include="Data\Settings.cs" />
+    <Compile Include="Data\UserPreference.cs" />
     <Compile Include="LocalizedStrings.cs" />
     <Compile Include="Pages\ActivityItem.xaml.cs">
       <DependentUpon>ActivityItem.xaml</DependentUpon>
@@ -189,27 +194,24 @@
     <Content Include="Assets\AppBar\next.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\AppBar\stop.png" />
-    <Content Include="Assets\AppBar\transport.pause.png" />
-    <Content Include="Assets\AppBar\transport.play.png" />
     <Content Include="Assets\btn-urgent-bg-highlighted%402x.png" />
     <Content Include="Assets\btn-urgent-pause%402x.png" />
     <Content Include="Assets\btn-urgent-play%402x.png" />
     <Content Include="Assets\hydraBackGround.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\hydraBackGroundDark.png" />
     <Content Include="Assets\icon-meal%402x.png" />
     <Content Include="Assets\icon-soup%402x.png" />
     <Content Include="Assets\icon-vegetables%402x.png" />
     <Content Include="Assets\info-academiccalendar%402x.png" />
     <Content Include="Assets\info-bicycle%402x.png" />
     <Content Include="Assets\info-doctors%402x.png" />
-    <Content Include="Assets\info-durfdoen%402x.png" />
     <Content Include="Assets\info-library%402x.png" />
     <Content Include="Assets\info-minerva%402x.png" />
     <Content Include="Assets\info-more%402x.png" />
     <Content Include="Assets\info-sports%402x.png" />
-    <Content Include="Assets\info-urgent%402x.png" />
+    <Content Include="Assets\Tiles\IconicTileMedium.png" />
     <Content Include="Assets\urgent-bg%402x.jpg" />
     <Content Include="Assets\urgent-nowplaying%402x.jpg" />
     <Content Include="Resources\webview.css" />
@@ -228,24 +230,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\AlignmentGrid.png" />
     <Content Include="Assets\ApplicationIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\external-link%402x.png" />
     <Content Include="Assets\schamper-bg.png" />
-    <Content Include="Assets\Tiles\FlipCycleTileLarge.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Tiles\FlipCycleTileMedium.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Tiles\FlipCycleTileSmall.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Tiles\IconicTileMediumLarge.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Assets\Tiles\IconicTileSmall.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -254,7 +243,6 @@
     <Content Include="Resources\info-sport-aanbod.html" />
     <Content Include="Resources\info-sport-openingsuren.html" />
     <Content Include="Resources\info-studentenartsen.html" />
-    <Content Include="Resources\schamper.css" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\AppResources.resx">
@@ -264,6 +252,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Facebook">
+      <HintPath>packages\Facebook.6.2.1-beta\lib\wp8\Facebook.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Phone.Controls.Toolkit">
       <HintPath>packages\WPtoolkit.4.2012.10.30\lib\wp8\Microsoft.Phone.Controls.Toolkit.dll</HintPath>
     </Reference>

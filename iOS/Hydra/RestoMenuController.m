@@ -47,12 +47,20 @@
                        name:RestoStoreDidReceiveMenuNotification object:nil];
         [center addObserver:self selector:@selector(reloadInfo)
                        name:RestoStoreDidUpdateInfoNotification object:nil];
+        [center addObserver:self selector:@selector(applicationDidBecomeActive:)
+                       name:UIApplicationDidBecomeActiveNotification object:nil];
     }
     return self;
 }
 
 - (void)loadView
 {
+#ifdef __IPHONE_7_0
+    if ([self respondsToSelector:@selector(setEdgesForExtendedLayout:)]) {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
+    }
+#endif
+
     CGRect bounds = [UIScreen mainScreen].bounds;
     self.view = [[UIView alloc] initWithFrame:bounds];
     self.view.backgroundColor = [UIColor hydraBackgroundColor];
@@ -115,6 +123,19 @@
 {
     [super viewDidAppear:animated];
     GAI_Track(@"Resto Menu");
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+    // Update days
+    NSDate *firstDay = self.days[0];
+    [self calculateDays];
+
+    // Check if day changed
+    if (![firstDay isEqualToDateIgnoringTime:self.days[0]]) {
+        [self reloadMenu];
+        [self scrollViewDidScroll:self.scrollView];
+    }
 }
 
 - (void)viewDidLayoutSubviews
@@ -234,8 +255,8 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    CGFloat pageWidth = self.scrollView.frame.size.width;
-    float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
+    CGFloat pageWidth = scrollView.frame.size.width;
+    float fractionalPage = scrollView.contentOffset.x / pageWidth;
 
     if (self.pageControlUsed == 0) {
         self.pageControl.currentPage = round(fractionalPage);
@@ -253,7 +274,7 @@
         upperDate = self.days[upperNumber];
     }
 
-    // GOAL: apply lower and upper date to menuSheetA and menuSheetB
+    // Goal: apply lower and upper date to menuSheetA and menuSheetB
     // with the least amount of changes possible
     if (self.menuSheetA.day != lowerDate && self.menuSheetA.day != upperDate) {
         NSUInteger newIndex = self.menuSheetB.day == upperDate ? lowerNumber : upperNumber;

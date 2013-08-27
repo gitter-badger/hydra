@@ -113,10 +113,10 @@ NSString *const AssociationStoreDidUpdateActivitiesNotification =
 - (void)encodeWithCoder:(NSCoder *)coder
 {
     [coder encodeObject:_associationLookup forKey:@"associationLookup"];
-    [coder encodeObject:_newsItems forKey:@"newsItems"];
     [coder encodeObject:_newsLastUpdated forKey:@"newsLastUpdated"];
-    [coder encodeObject:_activities forKey:@"activities"];
+    [coder encodeObject:_newsItems forKey:@"newsItems"];
     [coder encodeObject:_activitiesLastUpdated forKey:@"activitiesLastUpdated"];
+    [coder encodeObject:_activities forKey:@"activities"];
 }
 
 + (NSString *)storeCachePath
@@ -191,6 +191,8 @@ NSString *const AssociationStoreDidUpdateActivitiesNotification =
 
 - (void)updateResource:(NSString *)resource lastUpdated:(NSDate *)lastUpdated objectMapping:(RKObjectMapping *)mapping
 {
+    DLog(@"updateResource %@ (last: %@ => %f)", resource, lastUpdated, [lastUpdated timeIntervalSinceNow]);
+
     // Check if an update is required
     if (lastUpdated && [lastUpdated timeIntervalSinceNow] > -kUpdateInterval) {
         return;
@@ -213,6 +215,8 @@ NSString *const AssociationStoreDidUpdateActivitiesNotification =
     AppDelegate *app = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     [app handleError:error];
 
+    // TODO: fake event so loader thingies disappear?
+
     // Only clear the request after 10 seconds, to prevent failed requests
     // restarting due to related succesful requests
     if (objectLoader) {
@@ -227,6 +231,8 @@ NSString *const AssociationStoreDidUpdateActivitiesNotification =
 {
     NSString *notification = nil;
     NSLog(@"Retrieved resource \"%@\"", objectLoader.resourcePath);
+
+    VLog(objects);
 
     // Received some NewsItems
     if ([objectLoader.resourcePath isEqualToString:kNewsResource]) {

@@ -10,7 +10,6 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.DateUtils;
 import org.apache.http.util.EntityUtils;
@@ -70,7 +69,7 @@ public abstract class HTTPIntentService extends IntentService {
         }
     }
 
-    protected <T> T parseJsonObject(JSONObject object, Class<T> klass) throws Exception {
+    public static <T> T parseJsonObject(JSONObject object, Class<T> klass) throws Exception {
         T instance = klass.newInstance();
 
         for (Field f : klass.getDeclaredFields()) {
@@ -90,7 +89,7 @@ public abstract class HTTPIntentService extends IntentService {
         return instance;
     }
 
-    protected <T> T[] parseJsonArray(JSONArray array, Class<T> klass) throws Exception {
+    public static <T> T[] parseJsonArray(JSONArray array, Class<T> klass) throws Exception {
         T[] instance = (T[]) Array.newInstance(klass, array.length());
 
         for (int i = 0; i < array.length(); i++) {
