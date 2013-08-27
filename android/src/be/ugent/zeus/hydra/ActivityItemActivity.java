@@ -6,6 +6,7 @@
 package be.ugent.zeus.hydra;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -21,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import be.ugent.zeus.hydra.data.Activity;
-import be.ugent.zeus.hydra.util.facebook.RequestBuilder;
 import be.ugent.zeus.hydra.util.facebook.event.data.AttendingStatus;
 import be.ugent.zeus.hydra.util.facebook.event.tasks.AsyncComingGetter;
 import be.ugent.zeus.hydra.util.facebook.event.tasks.AsyncComingSetter;
@@ -252,9 +252,11 @@ public class ActivityItemActivity extends AbstractSherlockActivity {
             ((ViewManager) button.getParent()).removeView(button);
             ((ViewManager) guestsBottomBorder.getParent()).removeView(guestsBottomBorder);
         } else {
+            final Context context = this;
+            
             external.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("https://www.facebook.com/events/%s/", item.facebook_id)));
+                    Intent intent = getOpenFacebookIntent(context, item.facebook_id);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
                     startActivity(intent);
                 }
@@ -294,6 +296,15 @@ public class ActivityItemActivity extends AbstractSherlockActivity {
                     startActivity(intent);
                 }
             });
+        }
+    }
+    
+    public static Intent getOpenFacebookIntent(Context context, String id) {
+        try {
+            context.getPackageManager().getPackageInfo("com.facebook.katana", 0);
+            return new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("facebook://facebook.com/events/%s/", id)));
+        } catch (Exception e) {
+            return new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("https://www.facebook.com/events/%s/", id)));
         }
     }
 

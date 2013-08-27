@@ -13,6 +13,9 @@
 #import "FacebookEvent.h"
 #import "NSDate+Utilities.h"
 #import "CustomTableViewCell.h"
+#import "FacebookSession.h"
+#import "PreferencesService.h"
+#import "ActivityMapViewController.h"
 
 #import <SDWebImage/UIImageView+WebCache.h>
 #import <EventKit/EventKit.h>
@@ -95,6 +98,15 @@
 {
     [super viewDidAppear:animated];
     GAI_Track([@"Activity > " stringByAppendingString:self.activity.title]);
+
+    if (self.activity.facebookEvent) {
+        FacebookSession *session = [FacebookSession sharedSession];
+        PreferencesService *prefs = [PreferencesService sharedService];
+        if (!session.open && !prefs.shownFacebookPrompt){
+            [session openWithAllowLoginUI:YES];
+            prefs.shownFacebookPrompt = YES;
+        }
+    }
 }
 
 - (void)reloadData
@@ -584,15 +596,8 @@
             MKMapItem *destination =  [[MKMapItem alloc] initWithPlacemark:placeMark];
             destination.name = self.activity.location;
 
-            // Use native maps on iOS6 or open Google Maps on iOS5
-            if ([destination respondsToSelector:@selector(openInMapsWithLaunchOptions:)]) {
-                [destination openInMapsWithLaunchOptions:nil];
-            }
-            else {
-                NSString *url = [NSString stringWithFormat: @"http://maps.apple.com/maps?ll=%f,%f",
-                                 self.activity.latitude, self.activity.longitude];
-                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
-            }
+            UIViewController *c = [[ActivityMapViewController alloc] initWithMapItem:destination];
+            [self.navigationController pushViewController:c animated:YES];
         }
     }
 }

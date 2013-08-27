@@ -13,9 +13,10 @@
 #import "FacebookSession.h"
 
 #import <RestKit/RestKit.h>
-#import <ShareKit/SHK.h>
+#import <ShareKit/ShareKit.h>
 #import <ShareKit/SHKConfiguration.h>
 #import <FacebookSDK/FacebookSDK.h>
+#import <GAIDictionaryBuilder.h>
 
 #if TestFlightEnabled
 #import <TestFlight.h>
@@ -66,6 +67,7 @@
     // Create and setup controllers
     DashboardViewController *dashboard = [[DashboardViewController alloc] init];
     self.navController = [[UINavigationController alloc] initWithRootViewController:dashboard];
+    self.navController.view.backgroundColor = [UIColor hydraBackgroundColor];
     self.navController.navigationBar.tintColor = [UIColor hydraTintColor];
 
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -140,7 +142,8 @@ BOOL errorDialogShown = false;
 {
     NSLog(@"An error occured: %@", error);
     id<GAITracker> tracker = [GAI sharedInstance].defaultTracker;
-    [tracker trackException:NO withNSError:error];
+    [tracker send:[[GAIDictionaryBuilder createExceptionWithDescription:[error description]
+                                                              withFatal:NO] build]];
 
     if (errorDialogShown) return;
 

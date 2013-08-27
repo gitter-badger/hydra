@@ -1,9 +1,7 @@
 package be.ugent.zeus.hydra;
 
 import android.os.Bundle;
-import android.view.View;
 import android.webkit.WebView;
-import com.actionbarsherlock.app.SherlockActivity;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,6 +22,7 @@ public class InfoWebActivity extends AbstractSherlockActivity {
         WebView view = (WebView) findViewById(R.id.webview);
         view.getSettings().setLoadWithOverviewMode(true);
         view.getSettings().setUseWideViewPort(true);
+        view.getSettings().setJavaScriptEnabled(true);
         view.loadDataWithBaseURL("file:///android_asset/", page, "text/html", "utf8", null);
     }
 

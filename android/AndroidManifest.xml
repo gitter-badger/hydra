@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          android:versionCode="111" android:versionName="1.0"
-          package="be.ugent.zeus.hydra">
-    <!-- versionCode format: 
-   	x     -> major changes new features 
-   	x.y   -> coole update
-   	x.y.z -> bugfixez
-   	-->
+          android:versionCode="111" android:versionName="1.0.1"
+          package="be.ugent.zeus.hydra"
+          android:installLocation="auto">
+    <!-- versionCode format:
+    x     -> major changes new features
+    x.y   -> coole update
+    x.y.z -> bugfixez
+    -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -15,7 +16,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="17" />
-    
+
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true"/>
@@ -26,11 +27,13 @@
     <uses-permission android:name="be.ugent.zeus.hydra.permission.MAPS_RECEIVE"/>
 
     <application
-        android:icon="@drawable/icon" 
-        android:label="@string/app_name" 
-        android:theme="@style/Theme.Hydra.Light">
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.Hydra.Light"
+        android:allowBackup="true">
 
-        <activity android:name=".Hydra" 
+        <!-- Activities -->
+        <activity android:name=".Hydra"
                   android:logo="@drawable/hydra"
                   android:theme="@style/Theme.Hydra.Light.CenteredBig"
                   android:configChanges="screenSize|orientation"
@@ -40,22 +43,39 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        
+
         <activity android:name=".About"
-                  android:configChanges="screenSize|orientation" />
+                  android:configChanges="screenSize|orientation">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Hydra" />
+        </activity>
+
         <activity android:name=".ExternalComponents"
-                  android:configChanges="screenSize|orientation" />
+                  android:configChanges="screenSize|orientation">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".About" />
+        </activity>
+
         <activity android:name=".settings.Settings"
-                  android:configChanges="screenSize|orientation" />
-        
+                  android:configChanges="screenSize|orientation">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Hydra" />
+        </activity>
+
         <activity android:name=".settings.AssociationsFilter"
                   android:configChanges="screenSize|orientation" >
             <intent-filter>
                 <action android:name=".settings.AssociationsFilter" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".settings.Settings" />
         </activity>
-        
+
         <activity android:name=".settings.FacebookAuthHelper"
                   android:configChanges="screenSize|orientation" >
             <intent-filter>
@@ -63,44 +83,100 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        
+
         <activity android:name=".News"
-                  android:configChanges="screenSize|orientation" />
+                  android:configChanges="screenSize|orientation">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Hydra" />
+
+        </activity>
         <activity android:name=".NewsItemActivity"
-                  android:configChanges="screenSize|orientation" />
+                  android:configChanges="screenSize|orientation">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".News" />
+
+        </activity>
         <activity android:name=".Calendar"
-                  android:configChanges="screenSize|orientation" />
+                  android:configChanges="screenSize|orientation">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Hydra" />
+
+        </activity>
         <activity android:name=".ActivityItemActivity"
-                  android:configChanges="screenSize|orientation" />
+                  android:configChanges="screenSize|orientation">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Calendar" />
+
+        </activity>
         <activity android:name=".Info"
-                  android:configChanges="screenSize|orientation" />
+                  android:configChanges="screenSize|orientation">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Hydra" />
+
+        </activity>
         <activity android:name=".InfoWebActivity"
-                  android:configChanges="screenSize|orientation" />
+                  android:configChanges="screenSize|orientation">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Info" />
+
+        </activity>
         <activity android:name=".Urgent"
-                  android:configChanges="screenSize|orientation" 
-                  android:screenOrientation="portrait" />
-        
+                  android:configChanges="screenSize|orientation"
+                  android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Hydra" />
+
+        </activity>
+
         <activity android:name=".BuildingMap"
                   android:label="@string/resto_search_label"
                   android:launchMode="singleTop"
                   android:configChanges="screenSize|orientation" >
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH"
-                        android:launchMode="singleTop" />
+                <action
+                    android:name="android.intent.action.SEARCH"
+                    android:launchMode="singleTop" />
             </intent-filter>
-            <meta-data android:name="android.app.searchable"
-                       android:resource="@xml/resto_search" />
-        </activity>
-        
-        <activity android:name=".RestoMenu"
-                  android:configChanges="screenSize|orientation" />
-        <activity android:name=".SchamperDaily"
-                  android:configChanges="screenSize|orientation" />
-        <activity android:name=".SchamperDailyItem"
-                  android:configChanges="screenSize|orientation" />
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/resto_search" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".RestoMenu" />
 
-        <activity android:name="com.facebook.LoginActivity"/>
-        
+        </activity>
+
+        <activity android:name=".RestoMenu"
+                  android:configChanges="screenSize|orientation">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Hydra" />
+
+        </activity>
+        <activity android:name=".SchamperDaily"
+                  android:configChanges="screenSize|orientation">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Hydra" />
+
+        </activity>
+        <activity android:name=".SchamperDailyItem"
+                  android:configChanges="screenSize|orientation">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".SchamperDaily" />
+        </activity>
+
+        <activity android:name="com.facebook.LoginActivity"> </activity>
+
+        <!-- Services -->
         <service android:name=".data.services.MenuService">
             <intent-filter>
                 <action android:name="be.ugent.zeus.hydra.data.services.MenuService" />
@@ -144,6 +220,8 @@
                 <action android:name="be.ugent.zeus.hydra.util.audiostream.action.STOP" />
             </intent-filter>
         </service>
+
+        <!-- Receivers -->
         <receiver android:name=".util.audiostream.MusicIntentReceiver">
             <intent-filter>
                 <action android:name="android.media.AUDIO_BECOMING_NOISY" />
@@ -152,7 +230,6 @@
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
-        
         <receiver android:name="be.ugent.zeus.hydra.widget.RestoMenuWidgetProvider" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -160,16 +237,18 @@
             <meta-data android:name="android.appwidget.provider"
                        android:resource="@xml/widget_restomenu" />
         </receiver>
-        
-        <meta-data 
-            android:name="com.facebook.sdk.ApplicationId" 
+
+        <!-- Metadata -->
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/applicationId"/>
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/maps_api_key"/>
-        
+
+        <!-- Libraries -->
         <uses-library android:name="com.google.android.maps" />
     </application>
-    
+
 </manifest>
