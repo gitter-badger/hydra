@@ -27,6 +27,8 @@ gen
 build.xml
 ant.properties
 local.properties
+build.properties
+default.properties
 proguard.cfg
 proguard-project.txt
 

@@ -24,6 +24,9 @@ pom.xml.*
 build.xml
 local.properties
 proguard.cfg
+ant.properties
+build.properties
+default.properties
 
 #Gradle
 .gradle
