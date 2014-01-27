@@ -24,6 +24,8 @@
 		90410B111848DF9100331F6C /* info-guide@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 90410B0F1848DF9100331F6C /* info-guide@2x.png */; };
 		904BC46C17E2014A0000FED6 /* dot-question.png in Resources */ = {isa = PBXBuildFile; fileRef = 904BC46817E2014A0000FED6 /* dot-question.png */; };
 		904BC46D17E2014A0000FED6 /* dot-question@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 904BC46917E2014A0000FED6 /* dot-question@2x.png */; };
+		905FDC3D18965BAD00D81377 /* InfoItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 905FDC3C18965BAD00D81377 /* InfoItem.m */; };
+		905FDC4018965FC600D81377 /* InfoStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 905FDC3F18965FC600D81377 /* InfoStore.m */; };
 		906C1D8917C8A4A600145CD3 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 906C1D8817C8A4A600145CD3 /* MapViewController.m */; };
 		908DFF03188E932D00D526DC /* Pods-acknowledgements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 908DFF02188E932D00D526DC /* Pods-acknowledgements.plist */; };
 		90B1029717A85E9200669CCD /* kalender.css in Resources */ = {isa = PBXBuildFile; fileRef = 90B1029617A85E9200669CCD /* kalender.css */; };
@@ -246,6 +248,10 @@
 		90410B0F1848DF9100331F6C /* info-guide@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "info-guide@2x.png"; sourceTree = "<group>"; };
 		904BC46817E2014A0000FED6 /* dot-question.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dot-question.png"; sourceTree = "<group>"; };
 		904BC46917E2014A0000FED6 /* dot-question@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dot-question@2x.png"; sourceTree = "<group>"; };
+		905FDC3B18965BAD00D81377 /* InfoItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoItem.h; sourceTree = "<group>"; };
+		905FDC3C18965BAD00D81377 /* InfoItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoItem.m; sourceTree = "<group>"; };
+		905FDC3E18965FC600D81377 /* InfoStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoStore.h; sourceTree = "<group>"; };
+		905FDC3F18965FC600D81377 /* InfoStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoStore.m; sourceTree = "<group>"; };
 		906C1D8717C8A4A600145CD3 /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
 		906C1D8817C8A4A600145CD3 /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
 		908DFF02188E932D00D526DC /* Pods-acknowledgements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Pods-acknowledgements.plist"; sourceTree = "<group>"; };
@@ -553,6 +559,8 @@
 				3B93FBA91630969900C962DC /* UrgentPlayer.m */,
 				F5C6093616D2DFCB0043BD44 /* PreferencesService.h */,
 				F5C6093716D2DFCB0043BD44 /* PreferencesService.m */,
+				905FDC3E18965FC600D81377 /* InfoStore.h */,
+				905FDC3F18965FC600D81377 /* InfoStore.m */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -942,6 +950,8 @@
 				F55895C315B60F450001B399 /* RestoMenu.m */,
 				F5EBF14A159E1E3600EB5D26 /* SchamperArticle.h */,
 				F5EBF14B159E1E3600EB5D26 /* SchamperArticle.m */,
+				905FDC3B18965BAD00D81377 /* InfoItem.h */,
+				905FDC3C18965BAD00D81377 /* InfoItem.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -1227,6 +1237,7 @@
 				F5EBF11D159E092300EB5D26 /* SchamperViewController.m in Sources */,
 				F5EBF14C159E1E3600EB5D26 /* SchamperArticle.m in Sources */,
 				F5D36BC115B5BDA500B6E017 /* SchamperStore.m in Sources */,
+				905FDC3D18965BAD00D81377 /* InfoItem.m in Sources */,
 				F50EE09715B5F587000F1992 /* WebViewController.m in Sources */,
 				F55895C415B60F450001B399 /* RestoMenu.m in Sources */,
 				F55895C715B610140001B399 /* RestoStore.m in Sources */,
@@ -1244,6 +1255,7 @@
 				F5016BA6162756F300BBDB0A /* ActivitiesController.m in Sources */,
 				F5016BA91627665800BBDB0A /* ActivityDetailController.m in Sources */,
 				3B93FBAA1630969900C962DC /* UrgentPlayer.m in Sources */,
+				905FDC4018965FC600D81377 /* InfoStore.m in Sources */,
 				F52A8B7917CD366E00C3379C /* ActivityMapController.m in Sources */,
 				F5EBF0E1164BE583002C14BF /* SORelativeDateTransformer.m in Sources */,
 				F53A5E7716700242009EA4CC /* UrgentViewController.m in Sources */,

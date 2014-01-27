@@ -8,6 +8,10 @@
 
 #import "InfoViewController.h"
 #import "WebViewController.h"
+#import "InfoItem.h"
+#import "InfoStore.h"
+
+#import <SVProgressHUD.h>
 
 @interface InfoViewController ()
 
@@ -22,11 +26,15 @@
 
 - (id)init
 {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"info-content" ofType:@"plist"];
-    self = [self initWithContent:[[NSArray alloc] initWithContentsOfFile:path]];
+    InfoStore *infoStore = [InfoStore sharedStore];
+    self = [self initWithContent:infoStore.infoItems];
 
     self.title = @"Info";
     self.trackedViewName = self.title;
+
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    [center addObserver:self selector:@selector(infoUpdated:)
+                   name:InfoStoreDidUpdateInfoNotification object:nil];
 
     return self;
 }
@@ -39,17 +47,70 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     [[self tableView] setTableFooterView:[[UIView alloc] initWithFrame:CGRectZero]];
-    [[self tableView] setBounces:NO];
+    //[[self tableView] setBounces:NO];
+    
+    // TODO: only on main info screen
+    if ([UIRefreshControl class]) {
+        UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+        refreshControl.tintColor = [UIColor hydraTintColor];
+        [refreshControl addTarget:self action:@selector(didPullRefreshControl:)
+                 forControlEvents:UIControlEventValueChanged];
+
+        self.refreshControl = refreshControl;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     GAI_Track(self.trackedViewName);
+
+    if (self.content.count == 0) {
+        [SVProgressHUD show];
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+
+    [SVProgressHUD dismiss];
+}
+
+- (void)didPullRefreshControl:(id)sender
+{
+    [[InfoStore sharedStore] reloadInfoItems];
+}
+
+
+- (void)infoUpdated:(NSNotification *)notification
+{
+    // TODO ask user to reload or not
+    self.content = [[InfoStore sharedStore] infoItems];
+    [self.tableView reloadData];
+
+    //Hide or update progress HUD
+    if ([SVProgressHUD isVisible]) {
+        if (self.content.count > 0) {
+            [SVProgressHUD dismiss];
+        } else {
+            NSString *errorMsg = @"Geen info geladen";
+            [SVProgressHUD showErrorWithStatus:errorMsg];
+        }
+    }
+
+    if ([UIRefreshControl class]) {
+        [self.refreshControl endRefreshing];
+    }
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -85,10 +146,10 @@
     cell.contentView.backgroundColor = [UIColor whiteColor];
     cell.textLabel.backgroundColor = cell.contentView.backgroundColor;
 
-    NSDictionary *item = (self.content)[indexPath.row];
-    cell.textLabel.text = item[@"title"];
+    InfoItem *item = (self.content)[indexPath.row];
+    cell.textLabel.text = item.title;
     
-    UIImage *icon = [UIImage imageNamed:item[@"image"]];
+    UIImage *icon = [UIImage imageNamed:item.image];
     if(icon) {
         cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
         cell.imageView.image = icon;
@@ -98,7 +159,7 @@
     }
     
     // Show an icon, depending on the subview
-    if (item[@"url-ios"] || item[@"url"]) {
+    if (item.appstore || item.url) {
         UIImage *linkImage = [UIImage imageNamed:@"external-link.png"];
         UIImage *highlightedLinkImage = [UIImage imageNamed:@"external-link-active.png"];
         UIImageView *linkAccessory = [[UIImageView alloc] initWithImage:linkImage
@@ -117,30 +178,30 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSDictionary *item = self.content[indexPath.row];
+    InfoItem *item = self.content[indexPath.row];
 
     // Choose a different action depending on what data is available
-    if(item[@"subcontent"]){
-        NSArray *subContent = item[@"subcontent"];
+    if(item.subcontent){
+        NSArray *subContent = item.subcontent;
 
         InfoViewController *c = [[InfoViewController alloc] initWithContent:subContent];
-        c.title = item[@"title"];
+        c.title = item.title;
         c.trackedViewName = [NSString stringWithFormat:@"%@ > %@", self.trackedViewName, c.title];
 
         [self.navigationController pushViewController:c animated:YES];
     }
-    else if(item[@"html"]) {
+    else if(item.html) {
         WebViewController *c = [[WebViewController alloc] init];
-        c.title = item[@"title"];
+        c.title = item.title;
         c.trackedViewName = [NSString stringWithFormat:@"%@ > %@", self.trackedViewName, c.title];
-        [c loadHtml:item[@"html"]];
+        [c loadHtml:item.html];
 
         [self.navigationController pushViewController:c animated:YES];
     }
-    else if(item[@"url-ios"] || item[@"url"]) {
+    else if(item.appstore || item.url) {
         NSURL *url = nil;
-        if (item[@"url-ios"]) url = [NSURL URLWithString:item[@"url-ios"]];
-        else url = [NSURL URLWithString:item[@"url"]];
+        if (item.appstore) url = [NSURL URLWithString:item.appstore];
+        else url = [NSURL URLWithString:item.url];
 
         [[UIApplication sharedApplication] openURL:url];
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
