@@ -40,7 +40,7 @@
     // Trigger view laod
     [self view];
 
-    NSURL *url = [[NSBundle mainBundle] URLForResource:path withExtension:nil];
+    NSURL *url = [NSURL fileURLWithPath:path];
     [self.webView loadRequest:[NSURLRequest requestWithURL:url]];
 }
 

@@ -11,10 +11,13 @@
 #import "AppDelegate.h"
 
 #import <RestKit/RestKit.h>
+#import <AFNetworking/AFNetworking.h>
+#import <SSZipArchive.h>
 
 //#define kInfoBaseUrl @"http://zeus.ugent.be/hydra/api/1.0/info/"
 #define kInfoBaseUrl @"http://kelder.zeus.ugent.be/~feliciaan/info/"
 #define kInfoItemsUrl @"info-content.json"
+#define kInfoResourcesUrl @"info-resources%@.zip"
 #define kInfoUpdateInterval (60*60*24*7) // wait one week before updating
 
 NSString *const InfoStoreDidUpdateInfoNotification = @"InfoStoreDidUpdateInfoNotification";
@@ -152,11 +155,97 @@ NSString *const InfoStoreDidUpdateInfoNotification = @"InfoStoreDidUpdateInfoNot
         self.lastUpdated = [NSDate date];
         self.active = NO;
 
+        [self _updateResources]; // TODO: make it async
         [self syncStorage];
     }
 
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center postNotificationName:InfoStoreDidUpdateInfoNotification object:self];
+}
+#pragma - mark Update Resource files
+- (void)_updateResources
+{
+    NSString *screenType;
+    if ([[UIScreen mainScreen] scale] == 2.00) { // true if retina
+        screenType = @"@2x";
+    }else {
+        screenType = @"";
+    }
+    // create url
+    NSString *resourceFile = [NSString stringWithFormat:kInfoResourcesUrl, screenType];
+    NSURL *resourceURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kInfoBaseUrl, resourceFile]];
+
+    // find cache dir
+    NSString *cacheDirectory = [self padForResource:@""];
+
+    // create dir or if created nothing happens
+    NSError * error = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:cacheDirectory
+                              withIntermediateDirectories:YES
+                                               attributes:nil
+                                                    error:&error];
+    if (error != nil) {
+        NSLog(@"error creating directory: %@", error);
+        // TODO catch errors
+    }
+
+    // get TMP directory
+    NSString *temporaryFile = [NSTemporaryDirectory() stringByAppendingPathComponent:resourceFile];
+    // start download
+    NSURLRequest *request = [NSURLRequest requestWithURL:resourceURL];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSData *data = responseObject;
+        [data writeToFile:temporaryFile atomically:YES];
+        NSError *error = nil;
+        [SSZipArchive unzipFileAtPath:temporaryFile toDestination:cacheDirectory overwrite:YES password:nil error:&error];
+        if (error != nil) {
+            //TODO
+            NSLog(@"ERROR in unarchiving: %@", error);
+        }
+        [self _cleanupResource:temporaryFile];
+
+        NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+        [center postNotificationName:InfoStoreDidUpdateInfoNotification object:self];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        AppDelegate *app = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        [app handleError:error];
+        NSLog(@"ERROR: %@", error);
+    }];
+
+    [operation start];
+
+}
+
+- (void)_cleanupResource:(NSString *)tmpFile
+{
+    NSError *error = nil;
+    [[NSFileManager defaultManager] removeItemAtPath:tmpFile error:&error];
+    if (error != nil) {
+        NSLog(@"Cleanup failed: %@", error);
+    }
+}
+
+- (NSString *)padForResource:(NSString *)aResource
+{
+    // find cache dir
+    NSArray *cacheDirectories = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cacheDirectory = [cacheDirectories[0] stringByAppendingPathComponent:@"info"];
+
+    return [cacheDirectory stringByAppendingPathComponent:aResource];
+}
+
+- (NSString *)padForImage:(NSString *)aImage
+{
+    NSString *screenType;
+    if ([[UIScreen mainScreen] scale] == 2.00) { // true if retina
+        screenType = @"@2x";
+    }else {
+        screenType = @"";
+    }
+    NSString *imageFile = [NSString stringWithFormat:@"%@%@.png",aImage, screenType];
+    return [self padForResource:imageFile];
 }
 
 @end

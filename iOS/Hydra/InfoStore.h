@@ -17,4 +17,6 @@ extern NSString *const InfoStoreDidUpdateInfoNotification;
 + (InfoStore *)sharedStore;
 - (void)reloadInfoItems;
 
+- (NSString *)padForResource:(NSString *)aResource;
+- (NSString *)padForImage:(NSString *)aImage;
 @end

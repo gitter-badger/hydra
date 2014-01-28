@@ -17,6 +17,7 @@
 
 @property (nonatomic, strong) NSArray *content;
 @property (nonatomic, strong) NSString *trackedViewName;
+@property (nonatomic, strong) InfoStore *infoStore;
 
 @end
 
@@ -28,6 +29,7 @@
 {
     InfoStore *infoStore = [InfoStore sharedStore];
     self = [self initWithContent:infoStore.infoItems];
+    self.infoStore = infoStore;
 
     self.title = @"Info";
     self.trackedViewName = self.title;
@@ -43,6 +45,7 @@
 {
     if (self = [super initWithStyle:UITableViewStylePlain]) {
         self.content = content;
+        self.infoStore = [InfoStore sharedStore];
     }
     return self;
 }
@@ -149,7 +152,7 @@
     InfoItem *item = (self.content)[indexPath.row];
     cell.textLabel.text = item.title;
     
-    UIImage *icon = [UIImage imageNamed:item.image];
+    UIImage *icon = [UIImage imageWithContentsOfFile:[self.infoStore padForImage:item.image]];
     if(icon) {
         cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
         cell.imageView.image = icon;
@@ -182,9 +185,7 @@
 
     // Choose a different action depending on what data is available
     if(item.subcontent){
-        NSArray *subContent = item.subcontent;
-
-        InfoViewController *c = [[InfoViewController alloc] initWithContent:subContent];
+        InfoViewController *c = [[InfoViewController alloc] initWithContent:item.subcontent];
         c.title = item.title;
         c.trackedViewName = [NSString stringWithFormat:@"%@ > %@", self.trackedViewName, c.title];
 
@@ -194,7 +195,7 @@
         WebViewController *c = [[WebViewController alloc] init];
         c.title = item.title;
         c.trackedViewName = [NSString stringWithFormat:@"%@ > %@", self.trackedViewName, c.title];
-        [c loadHtml:item.html];
+        [c loadHtml:[self.infoStore padForResource:item.html]];
 
         [self.navigationController pushViewController:c animated:YES];
     }
