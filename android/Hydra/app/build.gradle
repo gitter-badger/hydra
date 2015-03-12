@@ -1,0 +1,38 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "20.0.0"
+
+    defaultConfig {
+        applicationId "be.ugent.zeus.hydra"
+        minSdkVersion 9
+        targetSdkVersion 21
+        versionCode 112
+        versionName "1.1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    repositories {
+        mavenCentral()
+    }
+
+    compile 'se.emilsjolander:stickylistheaders:2.5.2'
+    compile 'com.android.support:support-v4:21.0.+'
+    compile 'com.google.android.gms:play-services:6.5.87'
+    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+    compile 'com.github.chrisbanes.actionbarpulltorefresh:parent:0.6'
+    compile 'com.github.chrisbanes.actionbarpulltorefresh:extra-abs:0.6'
+    compile group: 'com.googlecode.plist', name: 'dd-plist', version: '1.8'
+    compile 'com.facebook.android:facebook-android-sdk:3.23.+'
+    compile 'com.ocpsoft:ocpsoft-pretty-time:1.0.7'
+    compile files('libs/libGoogleAnalyticsV2.jar')
+    compile files('libs/TestFlightLib.jar')
+}
